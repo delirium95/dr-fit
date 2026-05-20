@@ -8,7 +8,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+
 import { fetchRecipes, Recipe } from '../api/recipes';
+
+const PLACEHOLDER = require('../assets/placeholder-recipe.jpg');
 
 export function RecipeListModal() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -49,7 +52,10 @@ export function RecipeListModal() {
       <ScrollView style={styles.scroll}>
         {recipes.map((recipe) => (
           <TouchableOpacity key={recipe.id} style={styles.card} activeOpacity={0.7}>
-            <Image source={{ uri: recipe.image }} style={styles.image} />
+            <Image
+              source={recipe.image ? { uri: recipe.image } : PLACEHOLDER}
+              style={styles.image}
+            />
             <View style={styles.cardBody}>
               <Text style={styles.title}>{recipe.title}</Text>
               <Text style={styles.prepTime}>Prep: {recipe.prep_time} min</Text>
