@@ -1,20 +1,38 @@
-import React from 'react';
-import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import { RecipeListModal } from './components/RecipeListModal';
+import { StatusBar } from 'expo-status-bar';
+
+import { Recipe } from './api/recipes';
+import { RecipeListScreen } from './components/RecipeListScreen';
+import { RecipeDetailScreen } from './components/RecipeDetailScreen';
+
+type Screen =
+  | { name: 'list' }
+  | { name: 'detail'; recipe: Recipe };
 
 export default function App() {
+  const [screen, setScreen] = useState<Screen>({ name: 'list' });
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar style="auto" />
-      <RecipeListModal />
+    <SafeAreaView style={styles.root}>
+      <StatusBar style="dark" />
+      {screen.name === 'list' ? (
+        <RecipeListScreen
+          onSelect={(recipe) => setScreen({ name: 'detail', recipe })}
+        />
+      ) : (
+        <RecipeDetailScreen
+          recipe={screen.recipe}
+          onBack={() => setScreen({ name: 'list' })}
+        />
+      )}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  root: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FAFAF8',
   },
 });

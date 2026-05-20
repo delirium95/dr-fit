@@ -11,7 +11,7 @@ export type Recipe = {
   title: string;
   image: string | null;
   prep_time: number;
-  ingredients: Ingredient[];
+  ingredients: Ingredient[] | string;
 };
 
 export async function fetchRecipes(): Promise<Recipe[]> {

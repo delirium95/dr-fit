@@ -61,11 +61,14 @@ export function RecipeListModal() {
               <Text style={styles.prepTime}>Prep: {recipe.prep_time} min</Text>
               <View style={styles.ingredientsBlock}>
                 <Text style={styles.ingredientsHeader}>Ingredients:</Text>
-                {recipe.ingredients.map((ing, idx) => (
-                  <Text key={idx} style={styles.ingredientLine}>
-                    • {ing.name} — {ing.weight}{ing.unit}
-                  </Text>
-                ))}
+                {Array.isArray(recipe.ingredients)
+                  ? recipe.ingredients.map((ing, idx) => (
+                      <Text key={idx} style={styles.ingredientLine}>
+                        • {ing.name} — {ing.weight}{ing.unit}
+                      </Text>
+                    ))
+                  : <Text style={styles.ingredientLine}>{recipe.ingredients}</Text>
+                }
               </View>
             </View>
           </TouchableOpacity>
