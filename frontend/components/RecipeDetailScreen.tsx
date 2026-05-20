@@ -73,9 +73,11 @@ export function RecipeDetailScreen({ recipe, onBack }: Props) {
               <View key={idx} style={styles.ingredientRow}>
                 <View style={styles.dot} />
                 <Text style={styles.ingredientName}>{ing.name}</Text>
-                <Text style={styles.ingredientAmount}>
-                  {ing.weight} {ing.unit}
-                </Text>
+                {(ing.weight > 0 || !!ing.unit) && (
+                  <Text style={styles.ingredientAmount}>
+                    {ing.weight > 0 ? `${ing.weight} ` : ''}{ing.unit}
+                  </Text>
+                )}
               </View>
             ))}
           </View>

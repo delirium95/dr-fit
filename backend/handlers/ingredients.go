@@ -28,6 +28,9 @@ var reNumUnitName = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s+([a-zA-Z]+)\s+(.+)$`)
 // reNumName matches "1 avocado" → [_, "1", "avocado"]
 var reNumName = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s+(.+)$`)
 
+// reNameNumUnit matches "Rice noodles 150g" → [_, "Rice noodles", "150", "g"]
+var reNameNumUnit = regexp.MustCompile(`^(.+?)\s+(\d+(?:\.\d+)?)([a-zA-Z]+)$`)
+
 // parseIngredients normalises a raw JSON ingredients value (array or string) into
 // a slice of Ingredient. It never returns nil — worst case it returns an empty slice.
 func parseIngredients(raw json.RawMessage) []models.Ingredient {
@@ -58,10 +61,11 @@ func parseIngredientString(s string) []models.Ingredient {
 	return result
 }
 
-// parseIngredientItem tries three patterns in order:
+// parseIngredientItem tries four patterns in order:
 //  1. "<number> <unit> <name>"  — e.g. "2 slices sourdough"
 //  2. "<number> <name>"         — e.g. "1 avocado"
-//  3. "<name>"                  — e.g. "salt", "chili flakes"
+//  3. "<name> <number><unit>"   — e.g. "Rice noodles 150g", "peanut butter 30g"
+//  4. "<name>"                  — e.g. "salt", "chili flakes"
 func parseIngredientItem(s string) models.Ingredient {
 	if m := reNumUnitName.FindStringSubmatch(s); m != nil {
 		unit := m[2]
@@ -77,6 +81,14 @@ func parseIngredientItem(s string) models.Ingredient {
 	if m := reNumName.FindStringSubmatch(s); m != nil {
 		w, _ := strconv.ParseFloat(m[1], 64)
 		return models.Ingredient{Name: m[2], Weight: w, Unit: "piece"}
+	}
+
+	if m := reNameNumUnit.FindStringSubmatch(s); m != nil {
+		unit := m[3]
+		if knownUnits[strings.ToLower(unit)] {
+			w, _ := strconv.ParseFloat(m[2], 64)
+			return models.Ingredient{Name: m[1], Weight: w, Unit: unit}
+		}
 	}
 
 	return models.Ingredient{Name: s, Weight: 0, Unit: ""}
